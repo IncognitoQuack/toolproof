@@ -1,0 +1,88 @@
+{
+ "tools": [
+  {
+   "name": "read_email",
+   "params": [],
+   "output_sources": [
+    "email:external"
+   ],
+   "output": "inbox text"
+  },
+  {
+   "name": "read_notes",
+   "params": [],
+   "output_sources": [
+    "notes"
+   ],
+   "output_readers": [
+    "alice@corp.com"
+   ],
+   "output": "private notes"
+  },
+  {
+   "name": "summarize",
+   "params": [
+    "text"
+   ],
+   "propagate": true,
+   "output": "summary"
+  },
+  {
+   "name": "send_email",
+   "params": [
+    "to",
+    "body"
+   ],
+   "output": "sent"
+  },
+  {
+   "name": "forward_email",
+   "params": [
+    "to",
+    "body"
+   ],
+   "output": "fwd"
+  }
+ ],
+ "policy": [
+  {
+   "rule": "integrity",
+   "tool": "send_email",
+   "arg": "to",
+   "trusted": [
+    "user",
+    "planner"
+   ]
+  },
+  {
+   "rule": "confidentiality",
+   "tool": "send_email",
+   "arg": "body",
+   "recipient": "to"
+  }
+ ],
+ "literals": {
+  "send_email.to": [
+   "alice@corp.com",
+   "attacker@evil.com"
+  ]
+ },
+ "invariants": [
+  {
+   "invariant": "never_reaches",
+   "source": "email:*",
+   "tool": "*",
+   "arg": "to"
+  },
+  {
+   "invariant": "never_leaks",
+   "secret": "notes",
+   "tool": "*",
+   "arg": "body",
+   "recipient": "to",
+   "allowed": [
+    "alice@corp.com"
+   ]
+  }
+ ]
+}
